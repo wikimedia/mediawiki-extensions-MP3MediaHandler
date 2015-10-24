@@ -1,0 +1,26 @@
+{
+	"name": "MiniMp3",
+	"version": "0.2",
+	"author": [
+		"Sylvain Machefert",
+		"Sam J Watkins",
+		"Reddo"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:MiniMp3",
+	"description": "Uses a very small flash player to stream your mp3 files",
+	"type": "parserhook",
+	"MediaHandlers": {
+		"audio/mp3": "MiniMp3Handler"
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"wfMp3"
+		]
+	},
+	"config": {
+		"FileExtensions": [
+			"mp3"
+		]
+	},
+	"manifest_version": 1
+}
