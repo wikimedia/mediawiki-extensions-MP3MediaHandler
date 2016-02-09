@@ -11,7 +11,7 @@ $wgFileExtensions[] = 'mp3';
 
 $wgExtensionCredits['parserhook'][] = array(
 	'name' => 'MiniMp3',
-	'description' => 'Uses a very small flash player to stream your mp3 files',
+	'descriptionmsg' => 'mp3mediahandler-desc',
 	'author' => array( 'Sylvain Machefert', 'Sam J Watkins', 'Reddo' ),
 	'version' => '0.2',
 	'url' => 'https://www.mediawiki.org/wiki/Extension:MiniMp3'

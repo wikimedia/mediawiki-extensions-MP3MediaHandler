@@ -7,10 +7,15 @@
 		"Reddo"
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:MiniMp3",
-	"description": "Uses a very small flash player to stream your mp3 files",
+	"descriptionmsg": "mp3mediahandler-desc",
 	"type": "parserhook",
 	"MediaHandlers": {
 		"audio/mp3": "MiniMp3Handler"
+	},
+	"MessagesDirs": {
+		"MiniMp3Handler": [
+			"i18n"
+		]
 	},
 	"Hooks": {
 		"ParserFirstCallInit": [
