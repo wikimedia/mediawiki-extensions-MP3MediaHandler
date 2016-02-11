@@ -10,6 +10,9 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:MP3MediaHandler",
 	"descriptionmsg": "mp3mediahandler-desc",
 	"type": "parserhook",
+	"AutoloadClasses": {
+		"MP3MediaHandler": "MP3MediaHandler.php"
+	},
 	"MediaHandlers": {
 		"audio/mp3": "MP3MediaHandler"
 	},
