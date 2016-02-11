@@ -1,82 +1,19 @@
 <?php
-# Stream MP3 with http://flash-mp3-player.net/players/mini/ mini mp3 player
-# 
-# Requires :
-#   player_mp3_mini.swf in the extensions/MiniMp3 directory
-# 
- 
-$wgHooks['ParserFirstCallInit'][] = 'wfMp3';
-$wgMediaHandlers['audio/mp3'] = 'MiniMp3Handler';
+
+# Stream MP3 using HTML5 <audio> tag
+
+$wgMediaHandlers['audio/mp3'] = 'MP3MediaHandler';
 $wgFileExtensions[] = 'mp3';
 
 $wgExtensionCredits['parserhook'][] = array(
-	'name' => 'MiniMp3',
+	'name' => 'MP3MediaHandler',
 	'descriptionmsg' => 'mp3mediahandler-desc',
-	'author' => array( 'Sylvain Machefert', 'Sam J Watkins', 'Reddo' ),
-	'version' => '0.2',
-	'url' => 'https://www.mediawiki.org/wiki/Extension:MiniMp3'
+	'author' => "Mark Clements (HappyDog)",
+	'version' => '1.0',
+	'url' => 'https://www.mediawiki.org/wiki/Extension:MP3MediaHandler'
 );
- 
-function wfMp3( Parser &$parser ) {
-	$parser->setHook('mp3', 'renderMp3');
-	return true;
-}
 
-# The callback function for converting the input text to HTML output
-function renderMp3( $input, $params ) {
-	global $wgScriptPath;
-	$output= '';
-	
-	//get params
-	//if no color param given for specific element default to general color param
-	//if no general color param given default to 000000
-	$Color = isset( $params['color'] ) ? $params['color'] : '000000';
-	if ( $Color == '') 
-	{
-		$Color = '000000';
-	}
-
-	$slidColor = isset( $params['slidcolor'] ) ? $params['slidcolor'] : $Color ;
-	$loadColor = isset( $params['loadcolor'] ) ? $params['loadcolor'] : $Color ;
-	$buttColor = isset( $params['buttoncolor'] ) ? $params['buttoncolor'] : $Color ;
-
-	$bg = isset( $params['bg'] ) ? $params['bg'] : 'C0C0C0'; 
-        if ( $bg == '')
-        {
-                $bg = 'C0C0C0';
-        }
-
-	//do background code
-	$backgroundCode = Html::element( 'param', array( 'name' => "wmode", 'value' => "transparent" ) );
-	if ($bg != ''){
-		$backgroundCode = Html::element( 'param', array( 'name' => "bgcolor", 'value' => "#{$bg}" ) );
-	}
-
-	//File uploaded or external link ?
-	$img = wfFindFile($input);
-	if (!$img) { 
-		$mp3 = $input;
-	} 
-	else { 
-		$mp3 = $img->getFullURL();
-	}
-	
-	unset($img);
-	
-	$flashFile = $wgScriptPath.'/extensions/MiniMp3/player_mp3_mini.swf';
-	
-	$output .= '<object type="application/x-shockwave-flash" data="'.$flashFile.'" width="200" height="20">'
-	. Html::element( 'param', array( 'name' => "movie", 'value' => "{$flashFile}" ) )
-	. $backgroundCode
-	. Html::element( 'param', array( 'name' => "buttoncolor", 'value' => "#{$buttColor}" ) )
-	. Html::element( 'param', array( 'name' => "slidercolor", 'value' => "#{$slidColor}" ) )
-	. Html::element( 'param', array( 'name' => "FlashVars", 'value' => wfArrayToCGI( array( 'mp3' => $mp3, 'bgcolor' => $bg, 'loadingcolor' => $loadColor, 'buttoncolor' => $buttColor, 'slidercolor' => $slidColor ) ) ) )
-	. '</object>';
-
-	return $output;
-}
-
-class MiniMp3Handler extends MediaHandler {
+class MP3MediaHandler extends MediaHandler {
 
 	function validateParam( $name, $value ) { return true; }
 	function makeParamString( $params ) { return ''; }
@@ -84,60 +21,83 @@ class MiniMp3Handler extends MediaHandler {
 	function normaliseParams( $file, &$params ) { return true; }
 	function getImageSize( $file, $path ) { return false; }
 
-	function getParamMap() {
-		return array(
-			'mp3_color' => 'color',
-			'mp3_slidecolor' => 'slidcolor',
-			'mp3_loadcolor' => 'loadcolor',
-			'mp3_buttoncolor' => 'buttoncolor',
-			'mp3_backColor' => 'bg',
-		);
-	}
-
 	# Prevent "no higher resolution" message.
 	function mustRender( $file ) { return true; }
+	function getParamMap() { return array(); }
 
 	function doTransform ( $file, $dstPath, $dstUrl, $params, $flags = 0 ) {
-		return new Mp3Output( $this->getParamMap (), $file->getFullUrl () );
+		return new MP3OutputRenderer( $file->getFullUrl(), $file->getTitle() );
 	}
 }
 
-class Mp3Output extends MediaTransformOutput {
-var $buttColor, $slidColor, $loadColor, $bg, $mp3;
+class MP3OutputRenderer extends MediaTransformOutput {
+	var $pSourceFileURL;
 
-	function __construct( $params, $mp3 ){
-		$Color = isset( $params['mp3_color'] ) ? $params['mp3_color'] : '50A6C2';
-		if ( $Color == '') 
-		{
-			$Color = '50A6C2';
-		}
-
-		$this->slidColor = isset( $params['mp3_slidecolor'] ) ? $params['mp3_slidecolor'] : $Color ;
-		$this->loadColor = isset( $params['mp3_loadcolor'] ) ? $params['mp3_loadcolor'] : $Color ;
-		$this->buttColor = isset( $params['mp3_buttoncolor'] ) ? $params['mp3_buttoncolor'] : $Color ;
-		$this->bg = isset( $params['mp3_backColor'] ) ? $params['mp3_backColor'] : ''; 
-
-		$this->mp3 = $mp3;
+	function __construct( $SourceFileURL, $FileName ){
+		$this->pSourceFileURL = $SourceFileURL;
+		$this->pFileName = $FileName;
 	}
 
-	function toHtml( $options=array () ) {
-		$backgroundCode = Html::element( 'param', array( 'name' => "wmode", 'value' => "transparent" ) );
-		if ($bg != ''){
-			$backgroundCode = Html::element( 'param', array( 'name' => "bgcolor", 'value' => "#{$bg}" ) );
+	function toHtml( $options=array() ) {
+		$Output = '<audio controls="controls">'
+				. '<source src="$1" type="audio/mp3" />'
+				. $this->getFlashPlayerHTMLTemplate( '<p><a href="$1">$2</a></p>' )
+				. '</audio>';
+
+		$Args = array(
+					'$1'	=> $this->pSourceFileURL,
+					'$2'	=> $this->pFileName,
+				);
+
+
+		return $this->expandHtml( $Output, $Args );
+	}
+
+	function getFlashPlayerHTMLTemplate( $NonFlashFallback ) {
+		global $wgFlashPlayerPath, $wgFlashPlayerURLParam, $wgFlashPlayerParams;
+
+		if ( isset( $wgFlashPlayerPath ) ) {
+		// A common default parameter name for the audio file to be loaded is 'url',
+		// so we default to this.  Individual implementations can over-ride via
+		// LocalSettings.php, if necessary.
+			if ( !isset( $wgFlashPlayerURLParam ) ) {
+				$wgFlashPlayerURLParam = "url";
+			}
+
+			$ExtraParams = "";
+			if ( is_array( $wgFlashPlayerParams ) ) {
+				foreach ( $wgFlashPlayerParams as $Param => $Value ) {
+					$ExtraParams .= '<param name="' . htmlspecialchars( $Param )
+								  . '" value="' . htmlspecialchars( $Value ) . '">';
+				}
+			}
+
+			$HTML = '<object data="$10" type="application/x-shockwave-flash">'
+				  . '<param name="movie" value="$10" />'
+				  . '<param name="$11" value="$1" />'
+				  . $ExtraParams
+				  . $NonFlashFallback
+				  . '</object>';
+
+			$Args = array(
+					'$10'	=> $wgFlashPlayerPath,
+					'$11'	=> $wgFlashPlayerURLParam,
+				);
+
+			return $this->expandHtml( $HTML, $Args );
+		}
+		else {
+			return $NonFlashFallback;
+		}
+	}
+
+	function expandHtml( $HTML, $Args ) {
+		foreach ( $Args as $Key => $Value ) {
+			$Args[$Key] = htmlspecialchars( $Value );
 		}
 
-		$flashFile = '/w/extensions/MiniMp3/player_mp3_mini.swf';
-		
-		$output .= '<object type="application/x-shockwave-flash" data="'.$flashFile.'" width="200" height="20">'
-		. Html::element( 'param', array( 'name' => "movie", 'value' => "{$flashFile}" ) )
-		. $backgroundCode
-		. Html::element( 'param', array( 'name' => "buttoncolor", 'value' => "#{$this->buttColor}" ) )
-		. Html::element( 'param', array( 'name' => "slidercolor", 'value' => "#{$this->slidColor}" ) )
-		. Html::element( 'param', array( 'name' => "loadingcolor", 'value' => "#{$this->loadColor}" ) )
-		. Html::element( 'param', array( 'name' => "FlashVars", 'value' => wfArrayToCGI( array( 'mp3' => $this->mp3, 'bgcolor' => $this->bg, 'loadingcolor' => $this->loadColor, 'buttoncolor' => $this->buttColor, 'slidercolor' => $this->slidColor ) ) ) )
-		. '</object>';
-
-		return $output;
+		return str_replace( array_keys( $Args ), array_values( $Args ), $HTML );
 	}
+
 }
 

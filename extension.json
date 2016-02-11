@@ -1,25 +1,21 @@
 {
-	"name": "MiniMp3",
-	"version": "0.2",
+	"name": "MP3MediaHandler",
+	"version": "1.0",
 	"author": [
+		"Mark Clements (HappyDog)",
 		"Sylvain Machefert",
 		"Sam J Watkins",
 		"Reddo"
 	],
-	"url": "https://www.mediawiki.org/wiki/Extension:MiniMp3",
+	"url": "https://www.mediawiki.org/wiki/Extension:MP3MediaHandler",
 	"descriptionmsg": "mp3mediahandler-desc",
 	"type": "parserhook",
 	"MediaHandlers": {
-		"audio/mp3": "MiniMp3Handler"
+		"audio/mp3": "MP3MediaHandler"
 	},
 	"MessagesDirs": {
-		"MiniMp3Handler": [
+		"MP3MediaHandler": [
 			"i18n"
-		]
-	},
-	"Hooks": {
-		"ParserFirstCallInit": [
-			"wfMp3"
 		]
 	},
 	"config": {
