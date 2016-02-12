@@ -41,7 +41,8 @@ class MP3OutputRenderer extends MediaTransformOutput {
 	function toHtml( $options=array() ) {
 		$Output = '<audio controls="controls">'
 				. '<source src="$1" type="audio/mp3" />'
-				. $this->getFlashPlayerHTMLTemplate( '<p><a href="$1">$2</a></p>' )
+				. $this->getFlashPlayerHTMLTemplate( '<p><a href="$1">$2</a></p>',
+													 $this->pSourceFileURL )
 				. '</audio>';
 
 		$Args = array(
@@ -53,8 +54,9 @@ class MP3OutputRenderer extends MediaTransformOutput {
 		return $this->expandHtml( $Output, $Args );
 	}
 
-	function getFlashPlayerHTMLTemplate( $NonFlashFallback ) {
+	function getFlashPlayerHTMLTemplate( $NonFlashFallback, $SourceFileURL ) {
 		global $wgFlashPlayerPath, $wgFlashPlayerURLParam, $wgFlashPlayerParams;
+		global $wgFlashPlayerFlashVars, $wgFlashPlayerWidth, $wgFlashPlayerHeight;
 
 		if ( isset( $wgFlashPlayerPath ) ) {
 		// A common default parameter name for the audio file to be loaded is 'url',
@@ -64,27 +66,48 @@ class MP3OutputRenderer extends MediaTransformOutput {
 				$wgFlashPlayerURLParam = "url";
 			}
 
-			$ExtraParams = "";
-			if ( is_array( $wgFlashPlayerParams ) ) {
-				foreach ( $wgFlashPlayerParams as $Param => $Value ) {
-					$ExtraParams .= '<param name="' . htmlspecialchars( $Param )
-								  . '" value="' . htmlspecialchars( $Value ) . '">';
-				}
+		// Initialise the arrays that may be used to configure the player.
+			if ( !is_array( $wgFlashPlayerParams ) ) {
+				$wgFlashPlayerParams = array();
 			}
 
-			$HTML = '<object data="$10" type="application/x-shockwave-flash">'
-				  . '<param name="movie" value="$10" />'
-				  . '<param name="$11" value="$1" />'
-				  . $ExtraParams
+			if ( !is_array( $wgFlashPlayerFlashVars ) ) {
+				$wgFlashPlayerFlashVars = array();
+			}
+
+		// Add the required 'movie' param to the set of player parameters.
+			$wgFlashPlayerParams['movie'] = $wgFlashPlayerPath;
+
+		// Add the source file URL to the list of FlashVars arguments, and build them
+		// into a single FlashVars parameter to be passed into the movie.
+			$wgFlashPlayerFlashVars[$wgFlashPlayerURLParam] = $SourceFileURL;
+			$wgFlashPlayerParams['FlashVars'] = wfArrayToCGI( $wgFlashPlayerFlashVars );
+
+		// Create the parameter string from the parameters array.
+			$Params = "";
+			foreach ( $wgFlashPlayerParams as $Param => $Value ) {
+				$Params .= '<param name="' . htmlspecialchars( $Param )
+							  . '" value="' . htmlspecialchars( $Value ) . '">';
+			}
+
+		// Set FlashPlayer size, if specified.
+			$Sizes = "";
+			if ( isset( $wgFlashPlayerWidth ) ) {
+				$Sizes .= ' width="' . htmlspecialchars($wgFlashPlayerWidth) . '"';
+			}
+
+			if ( isset( $wgFlashPlayerHeight ) ) {
+				$Sizes .= ' height="' . htmlspecialchars($wgFlashPlayerHeight) . '"';
+			}
+
+		// Build the final HTML.
+			$HTML = '<object data="' . htmlspecialchars( $wgFlashPlayerPath )
+				  . '" type="application/x-shockwave-flash"' . $Sizes . '>'
+				  . $Params
 				  . $NonFlashFallback
 				  . '</object>';
 
-			$Args = array(
-					'$10'	=> $wgFlashPlayerPath,
-					'$11'	=> $wgFlashPlayerURLParam,
-				);
-
-			return $this->expandHtml( $HTML, $Args );
+			return $HTML;
 		}
 		else {
 			return $NonFlashFallback;
