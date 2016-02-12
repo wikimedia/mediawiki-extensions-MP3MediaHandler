@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Metalhead64"
+		]
+	},
+	"mp3mediahandler-desc": "Streamt MP3-Dateien mithilfe des HTML5-<audio>-Tags."
+}
