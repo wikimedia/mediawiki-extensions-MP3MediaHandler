@@ -3,6 +3,7 @@
 # Stream MP3 using HTML5 <audio> tag
 
 $wgMediaHandlers['audio/mp3'] = 'MP3MediaHandler';
+$wgMediaHandlers['audio/mpeg'] = 'MP3MediaHandler';
 $wgFileExtensions[] = 'mp3';
 
 $wgExtensionCredits['parserhook'][] = array(
@@ -123,4 +124,3 @@ class MP3OutputRenderer extends MediaTransformOutput {
 	}
 
 }
-

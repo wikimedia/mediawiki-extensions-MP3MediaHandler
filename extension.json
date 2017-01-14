@@ -15,7 +15,8 @@
 		"MP3OutputRenderer": "MP3MediaHandler.php"
 	},
 	"MediaHandlers": {
-		"audio/mp3": "MP3MediaHandler"
+		"audio/mp3": "MP3MediaHandler",
+		"audio/mpeg": "MP3MediaHandler"
 	},
 	"MessagesDirs": {
 		"MP3MediaHandler": [
