@@ -2,18 +2,6 @@
 
 # Stream MP3 using HTML5 <audio> tag
 
-$wgMediaHandlers['audio/mp3'] = 'MP3MediaHandler';
-$wgMediaHandlers['audio/mpeg'] = 'MP3MediaHandler';
-$wgFileExtensions[] = 'mp3';
-
-$wgExtensionCredits['parserhook'][] = array(
-	'name' => 'MP3MediaHandler',
-	'descriptionmsg' => 'mp3mediahandler-desc',
-	'author' => "Mark Clements (HappyDog)",
-	'version' => '1.0',
-	'url' => 'https://www.mediawiki.org/wiki/Extension:MP3MediaHandler'
-);
-
 class MP3MediaHandler extends MediaHandler {
 
 	function validateParam( $name, $value ) { return true; }
