@@ -23,10 +23,8 @@
 			"i18n"
 		]
 	},
-	"config": {
-		"FileExtensions": [
-			"mp3"
-		]
-	},
+	"FileExtensions": [
+		"mp3"
+	],
 	"manifest_version": 1
 }
