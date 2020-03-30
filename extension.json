@@ -11,8 +11,8 @@
 	"descriptionmsg": "mp3mediahandler-desc",
 	"type": "parserhook",
 	"AutoloadClasses": {
-		"MP3MediaHandler": "MP3MediaHandler.class.php",
-		"MP3OutputRenderer": "MP3MediaHandler.class.php"
+		"MP3MediaHandler": "src/MP3MediaHandler.php",
+		"MP3OutputRenderer": "src/MP3OutputRenderer.php"
 	},
 	"MediaHandlers": {
 		"audio/mp3": "MP3MediaHandler",
