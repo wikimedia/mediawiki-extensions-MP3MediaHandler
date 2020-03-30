@@ -1,30 +1,53 @@
 <?php
 
 class MP3OutputRenderer extends MediaTransformOutput {
-	var $pSourceFileURL;
 
-	function __construct( $SourceFileURL, $FileName ){
+	/**
+	 * @var string
+	 */
+	private $pSourceFileURL;
+
+	/**
+	 * @var string
+	 */
+	private $pFileName;
+
+	/**
+	 * @param string $SourceFileURL
+	 * @param string $FileName
+	 */
+	public function __construct( $SourceFileURL, $FileName ) {
 		$this->pSourceFileURL = $SourceFileURL;
 		$this->pFileName = $FileName;
 	}
 
-	function toHtml( $options=array() ) {
+	/**
+	 * @param array $options
+	 *
+	 * @return string
+	 */
+	public function toHtml( $options = [] ) {
 		$Output = '<audio controls="controls">'
 				. '<source src="$1" type="audio/mp3" />'
 				. $this->getFlashPlayerHTMLTemplate( '<p><a href="$1">$2</a></p>',
 													 $this->pSourceFileURL )
 				. '</audio>';
 
-		$Args = array(
-					'$1'	=> $this->pSourceFileURL,
-					'$2'	=> $this->pFileName,
-				);
-
+		$Args = [
+			'$1' => $this->pSourceFileURL,
+			'$2' => $this->pFileName,
+		];
 
 		return $this->expandHtml( $Output, $Args );
 	}
 
-	function getFlashPlayerHTMLTemplate( $NonFlashFallback, $SourceFileURL ) {
+	/**
+	 * @param string $NonFlashFallback
+	 * @param string $SourceFileURL
+	 *
+	 * @return string
+	 */
+	private function getFlashPlayerHTMLTemplate( $NonFlashFallback, $SourceFileURL ) {
 		global $wgFlashPlayerPath, $wgFlashPlayerURLParam, $wgFlashPlayerParams;
 		global $wgFlashPlayerFlashVars, $wgFlashPlayerWidth, $wgFlashPlayerHeight;
 
@@ -38,11 +61,11 @@ class MP3OutputRenderer extends MediaTransformOutput {
 
 		// Initialise the arrays that may be used to configure the player.
 			if ( !is_array( $wgFlashPlayerParams ) ) {
-				$wgFlashPlayerParams = array();
+				$wgFlashPlayerParams = [];
 			}
 
 			if ( !is_array( $wgFlashPlayerFlashVars ) ) {
-				$wgFlashPlayerFlashVars = array();
+				$wgFlashPlayerFlashVars = [];
 			}
 
 		// Add the required 'movie' param to the set of player parameters.
@@ -63,11 +86,11 @@ class MP3OutputRenderer extends MediaTransformOutput {
 		// Set FlashPlayer size, if specified.
 			$Sizes = "";
 			if ( isset( $wgFlashPlayerWidth ) ) {
-				$Sizes .= ' width="' . htmlspecialchars($wgFlashPlayerWidth) . '"';
+				$Sizes .= ' width="' . htmlspecialchars( $wgFlashPlayerWidth ) . '"';
 			}
 
 			if ( isset( $wgFlashPlayerHeight ) ) {
-				$Sizes .= ' height="' . htmlspecialchars($wgFlashPlayerHeight) . '"';
+				$Sizes .= ' height="' . htmlspecialchars( $wgFlashPlayerHeight ) . '"';
 			}
 
 		// Build the final HTML.
@@ -78,13 +101,18 @@ class MP3OutputRenderer extends MediaTransformOutput {
 				  . '</object>';
 
 			return $HTML;
-		}
-		else {
+		} else {
 			return $NonFlashFallback;
 		}
 	}
 
-	function expandHtml( $HTML, $Args ) {
+	/**
+	 * @param string $HTML
+	 * @param string[] $Args
+	 *
+	 * @return string
+	 */
+	private function expandHtml( $HTML, $Args ) {
 		foreach ( $Args as $Key => $Value ) {
 			$Args[$Key] = htmlspecialchars( $Value );
 		}
