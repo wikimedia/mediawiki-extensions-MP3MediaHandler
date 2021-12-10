@@ -10,6 +10,9 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:MP3MediaHandler",
 	"descriptionmsg": "mp3mediahandler-desc",
 	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.31.0"
+	},
 	"AutoloadClasses": {
 		"MP3MediaHandler": "src/MP3MediaHandler.php",
 		"MP3OutputRenderer": "src/MP3OutputRenderer.php"
@@ -26,5 +29,5 @@
 	"FileExtensions": [
 		"mp3"
 	],
-	"manifest_version": 1
+	"manifest_version": 2
 }
