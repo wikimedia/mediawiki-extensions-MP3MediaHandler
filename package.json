@@ -1,4 +1,5 @@
 {
+	"name": "MP3MediaHandler",
 	"private": true,
 	"scripts": {
 		"test": "grunt test"
