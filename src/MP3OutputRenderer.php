@@ -29,7 +29,7 @@ class MP3OutputRenderer extends MediaTransformOutput {
 	public function toHtml( $options = [] ) {
 		$Output = '<audio controls="controls">'
 				. '<source src="$1" type="audio/mp3" />'
-				. $this->getFlashPlayerHTMLTemplate( '<p><a href="$1">$2</a></p>',
+				. $this->getFlashPlayerHTMLTemplate( '<a href="$1">$2</a>',
 													 $this->pSourceFileURL )
 				. '</audio>';
 
@@ -38,7 +38,7 @@ class MP3OutputRenderer extends MediaTransformOutput {
 			'$2' => $this->pFileName,
 		];
 
-		return $this->expandHtml( $Output, $Args );
+		return $this->linkWrap( [], $this->expandHtml( $Output, $Args ) );
 	}
 
 	/**
