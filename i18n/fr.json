@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Verdy p",
 			"Wladek92"
 		]
 	},
-	"mp3mediahandler-desc": "Flux MP3 utilisant la balise HTML5 <audio>."
+	"mp3mediahandler-desc": "Flux MP3 utilisant la balise HTML5 <audio>"
 }
